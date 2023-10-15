@@ -295,7 +295,7 @@ impl State {
                 println!("some text");
                 let object_vert_iter = self.visual_objects[0].vertices.iter_mut();
                 for vertex in object_vert_iter {
-                    vertex.change_position([0.1, -0.1, 0.0]);
+                    vertex.change_position([0.01, -0.01, 0.0]);
                 };
                 self.reload_buffers();
 
