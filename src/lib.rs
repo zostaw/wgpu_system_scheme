@@ -286,19 +286,62 @@ impl State {
             WindowEvent::KeyboardInput { 
                 input:
                     KeyboardInput {
-                        virtual_keycode: Some(VirtualKeyCode::Space),
+                        virtual_keycode: Some(VirtualKeyCode::Left),
                         state: ElementState::Pressed,
                         ..
                     },
                 ..
             } => {
-                println!("some text");
+                println!("Left");
                 let object_vert_iter = self.visual_objects[0].vertices.iter_mut();
                 for vertex in object_vert_iter {
-                    vertex.change_position([0.01, -0.01, 0.0]);
+                    vertex.change_position([-0.01, 0.0, 0.0]);;
                 };
-                self.reload_buffers();
-
+            },
+            WindowEvent::KeyboardInput { 
+                input:
+                    KeyboardInput {
+                        virtual_keycode: Some(VirtualKeyCode::Right),
+                        state: ElementState::Pressed,
+                        ..
+                    },
+                ..
+            } => {
+                println!("Right");
+                let object_vert_iter = self.visual_objects[0].vertices.iter_mut();
+                for vertex in object_vert_iter {
+                    vertex.change_position([0.01, 0.00, 0.0]);
+                };
+            },
+            WindowEvent::KeyboardInput { 
+                input:
+                    KeyboardInput {
+                        virtual_keycode: Some(VirtualKeyCode::Down),
+                        state: ElementState::Pressed,
+                        ..
+                    },
+                ..
+            } => {
+                println!("Down");
+                let object_vert_iter = self.visual_objects[0].vertices.iter_mut();
+                for vertex in object_vert_iter {
+                    vertex.change_position([0.00, -0.01, 0.0]);
+                };
+            },
+            WindowEvent::KeyboardInput { 
+                input:
+                    KeyboardInput {
+                        virtual_keycode: Some(VirtualKeyCode::Up),
+                        state: ElementState::Pressed,
+                        ..
+                    },
+                ..
+            } => {
+                println!("Up");
+                let object_vert_iter = self.visual_objects[0].vertices.iter_mut();
+                for vertex in object_vert_iter {
+                    vertex.change_position([0.00, 0.01, 0.0]);
+                };
             },
             _ => (),
         };
@@ -419,11 +462,22 @@ impl State {
 
 fn initialize_visual_objects(state: &mut State) {
 
-    let rectangle1 = Rectangle::new([-0.9, 0.4], [-0.3, 0.9], 0.0, [0.5, 0.0, 0.5]);
-    let _ = &state.append_visual_object(rectangle1);
+    let web_interface = Rectangle::new([-0.4, 0.2], [0.1, 0.8], 0.0, [0.5, 0.0, 0.5]);
+    let _ = &state.append_visual_object(web_interface);
 
-    let rectangle2 = Rectangle::new([-0.8, 0.2], [-0.2, 0.8], 0.0, [0.2, 0.2, 0.2]);
-    let _ = &state.append_visual_object(rectangle2);
+    let voice_interface = Rectangle::new([-0.97, 0.2], [-0.6, 0.8], 0.0, [0.2, 0.2, 0.2]);
+    let _ = &state.append_visual_object(voice_interface);
+
+    let backend_system = Rectangle::new([-0.33, -0.85], [0.27, -0.05], 0.0, [0.5, 0.0, 0.5]);
+    let _ = &state.append_visual_object(backend_system);
+
+    let comp_cluster = Rectangle::new([-0.95, -0.85], [-0.67, -0.25], 0.0, [0.3, 0.0, 0.3]);
+    let _ = &state.append_visual_object(comp_cluster);
+
+    // position[0] -0.33000052, position[1] -0.8499995
+    // position[0] 0.27, position[1] -0.8499995
+    // position[0] 0.27, position[1] -0.049999446
+    // position[0] -0.33000052, position[1] -0.049999446
 
 }
 
@@ -463,7 +517,6 @@ pub async fn run() {
                     input:
                         KeyboardInput {
                             state: ElementState::Pressed,
-                            virtual_keycode: Some(VirtualKeyCode::Space),
                             ..
                         },
                     ..
@@ -480,6 +533,7 @@ pub async fn run() {
             },
             Event::RedrawRequested(window_id) if window_id == state.window().id() => {
                 state.update();
+                state.reload_buffers();
                 match state.render() {
                     Ok(_) => {}
                     // Reconfigure the surface if lost
