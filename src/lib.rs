@@ -225,8 +225,8 @@ impl State {
                 })],
             }),
             primitive: wgpu::PrimitiveState {
-                topology: wgpu::PrimitiveTopology::LineStrip, // 1.
-                //topology: wgpu::PrimitiveTopology::TriangleStrip, // 1.
+                //topology: wgpu::PrimitiveTopology::LineStrip, // 1.
+                topology: wgpu::PrimitiveTopology::TriangleStrip, // 1.
                 strip_index_format: None,
                 front_face: wgpu::FrontFace::Ccw, // 2.
                 cull_mode: Some(wgpu::Face::Back),
@@ -465,8 +465,11 @@ impl State {
 
 fn initialize_visual_objects(state: &mut State) {
 
+    let infinitesimal = 0.01;
     let web_interface = Rectangle::new([-0.4, 0.2], [0.1, 0.8], 0.0, [0.5, 0.0, 0.5]);
     let _ = &state.append_visual_object(web_interface);
+    let web_interface_bg = Rectangle::new([-0.4+infinitesimal, 0.2+infinitesimal], [0.1-infinitesimal, 0.8-infinitesimal], 0.0, [0.1, 0.0, 0.1]);
+    let _ = &state.append_visual_object(web_interface_bg);
     let reports = Rectangle::new([-0.37, 0.7], [-0.2, 0.77], 0.0, [0.3, 0.0, 0.3]);
     let _ = &state.append_visual_object(reports);
     let actions = Rectangle::new([-0.17, 0.7], [0.0, 0.77], 0.0, [0.3, 0.0, 0.3]);
