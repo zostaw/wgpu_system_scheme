@@ -8,6 +8,10 @@ use winit::{
 mod circles;
 use crate::circles::circles;
 
+#[cfg(target_arch="wasm32")]
+use wasm_bindgen::prelude::*;
+
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 pub struct Vertex {
@@ -508,13 +512,44 @@ fn initialize_visual_objects(state: &mut State) {
 
 }
 
+#[cfg_attr(target_arch="wasm32", wasm_bindgen(start))]
 pub async fn run() {
-    env_logger::init();
+
+    cfg_if::cfg_if! {
+        if #[cfg(target_arch = "wasm32")] {
+            std::panic::set_hook(Box::new(console_error_panic_hook::hook));
+            console_log::init_with_level(log::Level::Warn).expect("Couldn't initialize logger");
+        } else {
+            env_logger::init();
+        }
+    }
+
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new().build(&event_loop).unwrap();
 
+    #[cfg(target_arch = "wasm32")]
+    {
+        // Winit prevents sizing with CSS, so we have to set
+        // the size manually when on web.
+        use winit::dpi::PhysicalSize;
+        window.set_inner_size(PhysicalSize::new(1920, 1080));
+        
+        use winit::platform::web::WindowExtWebSys;
+        web_sys::window()
+            .and_then(|win| win.document())
+            .and_then(|doc| {
+                let dst = doc.get_element_by_id("wasm-example")?;
+                let canvas = web_sys::Element::from(window.canvas());
+                dst.append_child(&canvas).ok()?;
+                Some(())
+            })
+            .expect("Couldn't append canvas to document body.");
+    }
+
+
+
     // NOTE: this is for testing purpose
-    window.set_outer_position(PhysicalPosition{x: 0.0, y: 0.0});
+    //window.set_outer_position(PhysicalPosition{x: 0.0, y: 0.0});
 
     let mut state = State::new(window).await;
 
